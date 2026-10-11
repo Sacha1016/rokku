@@ -1,4 +1,4 @@
-package eu.kanade.tachiyomi.ui.setting.controllers
+package eu.kanade.tachiyomi.ui.setting.controllers.legacy
 
 import android.app.Activity
 import androidx.preference.PreferenceGroup
