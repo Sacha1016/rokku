@@ -322,7 +322,7 @@ object SettingsTrackingScreen : ComposableSettings() {
             onDismissRequest = onDismissRequest,
             title = {
                 Text(
-                    text = stringResource(MR.strings.logout_title, stringResource(tracker.nameRes())),
+                    text = stringResource(MR.strings.log_out_from_, stringResource(tracker.nameRes())),
                     textAlign = TextAlign.Center,
                     modifier = Modifier.fillMaxWidth(),
                 )
