@@ -40,7 +40,7 @@ import yokai.util.lang.getString
 import eu.kanade.tachiyomi.data.preference.PreferenceKeys as Keys
 import eu.kanade.tachiyomi.ui.setting.titleMRes as titleRes
 
-class SettingsTrackingController :
+class SettingsTrackingLegacyController :
     SettingsLegacyController(),
     TrackLoginDialog.Listener,
     TrackLogoutDialog.Listener {
@@ -100,12 +100,12 @@ class SettingsTrackingController :
             }
             trackPreference(trackManager.kitsu) {
                 val dialog = TrackLoginDialog(trackManager.kitsu, MR.strings.email)
-                dialog.targetController = this@SettingsTrackingController
+                dialog.targetController = this@SettingsTrackingLegacyController
                 dialog.showDialog(router)
             }
             trackPreference(trackManager.mangaUpdates) {
                 val dialog = TrackLoginDialog(trackManager.mangaUpdates, MR.strings.username)
-                dialog.targetController = this@SettingsTrackingController
+                dialog.targetController = this@SettingsTrackingLegacyController
                 dialog.showDialog(router)
             }
             trackPreference(trackManager.shikimori) {
@@ -152,7 +152,7 @@ class SettingsTrackingController :
                             updatePreference(service)
                         } else {
                             val dialog = TrackLogoutDialog(service)
-                            dialog.targetController = this@SettingsTrackingController
+                            dialog.targetController = this@SettingsTrackingLegacyController
                             dialog.showDialog(router)
                         }
                     } else {
