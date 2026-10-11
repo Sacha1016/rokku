@@ -230,7 +230,7 @@ object SettingsTrackingScreen : ComposableSettings() {
         AlertDialog(
             onDismissRequest = onDismissRequest,
             title = {
-                Text(text = stringResource(MR.strings.login_title, stringResource(tracker.nameRes())))
+                Text(text = stringResource(MR.strings.log_in_to_, stringResource(tracker.nameRes())))
             },
             text = {
                 Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
@@ -288,7 +288,7 @@ object SettingsTrackingScreen : ComposableSettings() {
                         }
                     },
                 ) {
-                    Text(text = stringResource(if (processing) MR.strings.logging_in else MR.strings.login))
+                    Text(text = stringResource(if (processing) MR.strings.loading else MR.strings.log_in))
                 }
             },
         )
@@ -302,7 +302,7 @@ object SettingsTrackingScreen : ComposableSettings() {
     ): Boolean {
         return try {
             tracker.login(username, password)
-            withContext(Dispatchers.Main) { context.toast(context.getString(MR.strings.login_success)) }
+            withContext(Dispatchers.Main) { context.toast(context.getString(MR.strings.successfully_logged_in)) }
             true
         } catch (e: Throwable) {
             tracker.logout()
@@ -340,14 +340,14 @@ object SettingsTrackingScreen : ComposableSettings() {
                         onClick = {
                             tracker.logout()
                             onDismissRequest()
-                            context.toast(context.getString(MR.strings.logout_success))
+                            context.toast(context.getString(MR.strings.successfully_logged_out))
                         },
                         colors = ButtonDefaults.buttonColors(
                             containerColor = MaterialTheme.colorScheme.error,
                             contentColor = MaterialTheme.colorScheme.onError,
                         ),
                     ) {
-                        Text(text = stringResource(MR.strings.logout))
+                        Text(text = stringResource(MR.strings.log_out))
                     }
                 }
             },
