@@ -42,11 +42,9 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
 import dev.icerock.moko.resources.StringResource
 import dev.icerock.moko.resources.compose.stringResource
-import eu.kanade.tachiyomi.core.storage.preference.collectAsState
 import eu.kanade.tachiyomi.data.preference.PreferencesHelper
 import eu.kanade.tachiyomi.data.track.EnhancedTrackService
 import eu.kanade.tachiyomi.data.track.TrackManager
-import eu.kanade.tachiyomi.data.track.TrackPreferences
 import eu.kanade.tachiyomi.data.track.TrackService
 import eu.kanade.tachiyomi.data.track.anilist.AnilistApi
 import eu.kanade.tachiyomi.data.track.bangumi.BangumiApi
@@ -100,9 +98,6 @@ object SettingsTrackingScreen : ComposableSettings() {
         var refresh by remember { mutableIntStateOf(0) }
         LifecycleEventEffect(Lifecycle.Event.ON_RESUME) { refresh++ }
 
-        val trackPreferences: TrackPreferences by injectLazy()
-        val loggedUsers = trackManager.services.map { trackPreferences.trackUsername(it).collectAsState().value }
-
         var dialog by remember { mutableStateOf<Any?>(null) }
         when (val d = dialog) {
             is LoginDialog -> TrackingLoginDialog(d.tracker, d.uNameStringRes) {
@@ -130,7 +125,7 @@ object SettingsTrackingScreen : ComposableSettings() {
                 logout = { dialog = LogoutDialog(service) },
             )
 
-        val services = remember(refresh, loggedUsers) {
+        val services = remember(refresh) {
             buildList<Preference.PreferenceItem<out Any>> {
                 add(oauth(trackManager.myAnimeList, MyAnimeListApi.authUrl()))
                 add(oauth(trackManager.aniList, AnilistApi.authUrl()))
@@ -171,7 +166,7 @@ object SettingsTrackingScreen : ComposableSettings() {
             }.toImmutableList()
         }
 
-        val enhanced = remember(refresh, loggedUsers) {
+        val enhanced = remember(refresh) {
             buildList<Preference.PreferenceItem<out Any>> {
                 trackManager.services
                     .filter { s ->
