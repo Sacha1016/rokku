@@ -9,6 +9,11 @@ class TrackPreferences(
     private val preferenceStore: PreferenceStore,
 ) {
 
+    fun trackDisplayUsername(sync: TrackService) = preferenceStore.getString(
+        Preference.privateKey("pref_mangasync_displayname_${sync.id}"),
+        "",
+    )
+
     fun trackUsername(sync: TrackService) = preferenceStore.getString(trackUsername(sync.id), "")
 
     fun trackPassword(sync: TrackService) = preferenceStore.getString(trackPassword(sync.id), "")
