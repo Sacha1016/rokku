@@ -34,6 +34,7 @@ class BangumiInterceptor(val bangumi: Bangumi) : Interceptor {
         val authRequest = if (originalRequest.method == "GET") {
             originalRequest.newBuilder()
                 .header("User-Agent", "thiago8rocha/rokku/${BuildConfig.VERSION_NAME} (${BuildConfig.APPLICATION_ID})")
+                .header("Authorization", "Bearer ${currAuth.accessToken}")
                 .url(
                     originalRequest.url.newBuilder()
                         .addQueryParameter("access_token", currAuth.accessToken).build(),
@@ -43,6 +44,7 @@ class BangumiInterceptor(val bangumi: Bangumi) : Interceptor {
             originalRequest.newBuilder()
                 .post(addToken(currAuth.accessToken, originalRequest.body as FormBody))
                 .header("User-Agent", "thiago8rocha/rokku/${BuildConfig.VERSION_NAME} (${BuildConfig.APPLICATION_ID})")
+                .header("Authorization", "Bearer ${currAuth.accessToken}")
                 .build()
         }
 
