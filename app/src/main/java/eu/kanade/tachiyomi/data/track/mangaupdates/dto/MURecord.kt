@@ -34,5 +34,6 @@ fun MURecord.toTrackSearch(id: Long): TrackSearch {
         publishing_status = ""
         publishing_type = this@toTrackSearch.type.toString()
         start_date = this@toTrackSearch.year.toString()
+        score = this@toTrackSearch.bayesianRating?.takeIf { it > 0 } ?: -1.0
     }
 }
