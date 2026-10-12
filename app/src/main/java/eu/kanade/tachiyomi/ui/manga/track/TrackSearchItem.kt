@@ -15,6 +15,7 @@ import eu.kanade.tachiyomi.databinding.TrackSearchItemBinding
 import eu.kanade.tachiyomi.util.system.dpToPx
 import yokai.i18n.MR
 import yokai.util.lang.getString
+import java.text.DecimalFormat
 import java.util.Locale
 
 class TrackSearchItem(val trackSearch: TrackSearch) : AbstractItem<TrackSearchItem.ViewHolder>() {
@@ -79,6 +80,15 @@ class TrackSearchItem(val trackSearch: TrackSearch) : AbstractItem<TrackSearchIt
                 binding.trackSearchStartResult.isVisible = false
             } else {
                 binding.trackSearchStartResult.text = track.start_date
+            }
+
+            if (track.score < 0f) {
+                binding.trackSearchScore.isVisible = false
+                binding.trackSearchScoreResult.isVisible = false
+            } else {
+                binding.trackSearchScore.isVisible = true
+                binding.trackSearchScoreResult.isVisible = true
+                binding.trackSearchScoreResult.text = DecimalFormat("0.##").format(track.score)
             }
         }
 
