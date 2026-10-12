@@ -117,8 +117,6 @@ object SettingsTrackingScreen : ComposableSettings() {
             logout = { dialog = LogoutDialog(service) },
         )
 
-        add(oauth(trackManager.mangaBaka) { MangaBakaApi.authUrl() })
-
         fun credentials(service: TrackService, uname: StringResource) =
             Preference.PreferenceItem.TrackerPreference(
                 tracker = service,
@@ -129,8 +127,8 @@ object SettingsTrackingScreen : ComposableSettings() {
 
         val services = remember(refresh) {
             buildList<Preference.PreferenceItem<out Any>> {
-                add(oauth(trackManager.myAnimeList, MyAnimeListApi.authUrl()))
-                add(oauth(trackManager.aniList, AnilistApi.authUrl()))
+                add(oauth(trackManager.myAnimeList) { MyAnimeListApi.authUrl() })
+                add(oauth(trackManager.aniList) { AnilistApi.authUrl() })
                 if (trackManager.aniList.isLogged) {
                     add(
                         Preference.PreferenceItem.TextPreference(
@@ -160,10 +158,10 @@ object SettingsTrackingScreen : ComposableSettings() {
                 }
                 add(credentials(trackManager.kitsu, MR.strings.email))
                 add(credentials(trackManager.mangaUpdates, MR.strings.username))
-                add(oauth(trackManager.shikimori, ShikimoriApi.authUrl()))
-                add(oauth(trackManager.bangumi, BangumiApi.authUrl()))
-                add(oauth(trackManager.mangaBaka, MangaBakaApi.authUrl()))
-                add(oauth(trackManager.hikka, HikkaApi.authUrl()))
+                add(oauth(trackManager.shikimori) { ShikimoriApi.authUrl() })
+                add(oauth(trackManager.bangumi) { BangumiApi.authUrl() })
+                add(oauth(trackManager.mangaBaka) { MangaBakaApi.authUrl() })
+                add(oauth(trackManager.hikka) { HikkaApi.authUrl() })
                 add(Preference.PreferenceItem.InfoPreference(context.getString(MR.strings.tracking_info)))
             }.toImmutableList()
         }
