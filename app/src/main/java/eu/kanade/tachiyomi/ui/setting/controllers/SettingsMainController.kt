@@ -14,6 +14,7 @@ import eu.kanade.tachiyomi.ui.main.FloatingSearchInterface
 import eu.kanade.tachiyomi.ui.more.AboutController
 import eu.kanade.tachiyomi.ui.setting.SettingsLegacyController
 import eu.kanade.tachiyomi.ui.setting.controllers.legacy.SettingsAdvancedLegacyController
+import eu.kanade.tachiyomi.ui.setting.controllers.legacy.SettingsTrackingLegacyController
 import eu.kanade.tachiyomi.ui.setting.controllers.search.SettingsSearchController
 import eu.kanade.tachiyomi.ui.setting.iconRes
 import eu.kanade.tachiyomi.ui.setting.iconTint
@@ -83,6 +84,10 @@ class SettingsMainController : SettingsLegacyController(), FloatingSearchInterfa
             iconTint = tintColor
             titleRes = MR.strings.tracking
             onClick { navigateTo(SettingsTrackingController()) }
+            onLongClick {
+                navigateTo(SettingsTrackingLegacyController())
+                context.toast("You're entering experimental version of 'Tracking'")
+            }
         }
         preference {
             iconRes = R.drawable.ic_storage_24dp
