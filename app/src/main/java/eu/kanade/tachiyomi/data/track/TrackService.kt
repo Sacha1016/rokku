@@ -114,6 +114,7 @@ abstract class TrackService(val id: Long) {
     @CallSuper
     open fun logout() {
         trackPreferences.setCredentials(this, "", "")
+        trackPreferences.trackDisplayUsername(this).set("")
     }
 
     open val isLogged: Boolean
