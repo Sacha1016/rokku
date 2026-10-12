@@ -16,11 +16,10 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -30,12 +29,12 @@ import androidx.compose.ui.unit.dp
 import dev.icerock.moko.resources.compose.stringResource
 import eu.kanade.tachiyomi.core.storage.preference.collectAsState
 import eu.kanade.tachiyomi.data.track.EnhancedTrackService
+import eu.kanade.tachiyomi.data.track.RefreshResult
 import eu.kanade.tachiyomi.data.track.TrackPreferences
 import eu.kanade.tachiyomi.data.track.TrackService
 import eu.kanade.tachiyomi.util.system.toast
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import uy.kohesive.injekt.injectLazy
 import yokai.i18n.MR
 import yokai.presentation.component.TrackLogoIcon
@@ -56,8 +55,15 @@ fun TrackingPreferenceWidget(
     val username by trackPreferences.trackUsername(tracker).collectAsState()
     val displayName by trackPreferences.trackDisplayUsername(tracker).collectAsState()
     val shownName = displayName.ifBlank { username }
+    val isRefreshing by tracker.isRefreshingFlow.collectAsState()
 
-    var isRefreshing by remember { mutableStateOf(false) }
+    LaunchedEffect(tracker) {
+        tracker.refreshResultFlow.collect { result ->
+            if (result is RefreshResult.Error) {
+                context.toast(result.error.message.toString())
+            }
+        }
+    }
 
     val highlighted = LocalPreferenceHighlighted.current
     Box(modifier = Modifier.highlightBackground(highlighted)) {
@@ -99,14 +105,7 @@ fun TrackingPreferenceWidget(
                         enabled = !isRefreshing,
                         onClick = {
                             scope.launch(Dispatchers.IO) {
-                                isRefreshing = true
-                                try {
-                                    tracker.refreshUser()
-                                } catch (e: Throwable) {
-                                    withContext(Dispatchers.Main) { context.toast(e.message.toString()) }
-                                } finally {
-                                    isRefreshing = false
-                                }
+                                tracker.refreshUser()
                             }
                         },
                     ) {
