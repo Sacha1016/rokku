@@ -99,7 +99,7 @@ class MyAnimeListApi(private val client: OkHttpClient, interceptor: MyAnimeListI
                         title = it.title
                         summary = it.synopsis
                         total_chapters = it.numChapters
-                        score = it.mean.toDouble()
+                        score = it.mean.toFloat()
                         cover_url = (it.covers?.large ?: it.covers?.medium).orEmpty()
                         tracking_url = "https://myanimelist.net/manga/$media_id"
                         publishing_status = it.status.replace("_", " ")
@@ -193,7 +193,7 @@ class MyAnimeListApi(private val client: OkHttpClient, interceptor: MyAnimeListI
             val isRereading = listStatus.isRereading
             status = if (isRereading) MyAnimeList.REREADING else getStatus(listStatus.status)
             last_chapter_read = listStatus.numChaptersRead.toFloat()
-            score = listStatus.score.toDouble()
+            score = listStatus.score.toFloat()
             listStatus.startDate?.let { started_reading_date = parseDate(it) }
             listStatus.finishDate?.let { finished_reading_date = parseDate(it) }
         }
