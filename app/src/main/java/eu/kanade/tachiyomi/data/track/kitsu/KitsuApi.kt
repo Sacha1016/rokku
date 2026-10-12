@@ -220,7 +220,7 @@ class KitsuApi(private val client: OkHttpClient, interceptor: KitsuInterceptor) 
         }
     }
 
-    suspend fun getCurrentUser(): String {
+    suspend fun getCurrentUser(): KitsuUser {
         return withIOContext {
             val url = "${BASE_URL}users".toUri().buildUpon()
                 .encodedQuery("filter[self]=true")
@@ -229,7 +229,6 @@ class KitsuApi(private val client: OkHttpClient, interceptor: KitsuInterceptor) 
                 .awaitSuccess()
                 .parseAs<KitsuCurrentUserResult>()
                 .data[0]
-                .id
         }
     }
 
