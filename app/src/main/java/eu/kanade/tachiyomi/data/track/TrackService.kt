@@ -44,9 +44,6 @@ abstract class TrackService(val id: Long) {
     // Whether the remote service supports organizing entries into user-defined custom lists
     open val supportsCustomLists: Boolean = false
 
-    // Whether the remote service can re-fetch the user's profile (display name) on demand
-    open val supportsUserRefresh: Boolean = false
-
     private val _isRefreshingFlow = MutableStateFlow(false)
     val isRefreshingFlow: StateFlow<Boolean> = _isRefreshingFlow.asStateFlow()
 
@@ -103,13 +100,13 @@ abstract class TrackService(val id: Long) {
     abstract suspend fun login(username: String, password: String): Boolean
 
     /**
-     * Services with [supportsUserRefresh] re-fetch the user profile from their API here
+     * Services with re-fetch the user profile from their API here
      * and update the settings that depend on it (display name, scoring type...).
      */
     protected open suspend fun updateUserConfig() {}
 
     suspend fun refreshUser() {
-        if (!supportsUserRefresh || !_isRefreshingFlow.compareAndSet(false, true)) return
+        if (!_isRefreshingFlow.compareAndSet(false, true)) return
         try {
             updateUserConfig()
             _refreshResultFlow.emit(RefreshResult.Success)
