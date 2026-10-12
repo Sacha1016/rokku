@@ -110,12 +110,14 @@ object SettingsTrackingScreen : ComposableSettings() {
             }
         }
 
-        fun oauth(service: TrackService, url: Uri) = Preference.PreferenceItem.TrackerPreference(
+        fun oauth(service: TrackService, url: () -> Uri) = Preference.PreferenceItem.TrackerPreference(
             tracker = service,
             title = context.getString(service.nameRes()),
-            login = { context.openInBrowser(url, service.getLogoColor(), true) },
+            login = { context.openInBrowser(url(), service.getLogoColor(), true) },
             logout = { dialog = LogoutDialog(service) },
         )
+
+        add(oauth(trackManager.mangaBaka) { MangaBakaApi.authUrl() })
 
         fun credentials(service: TrackService, uname: StringResource) =
             Preference.PreferenceItem.TrackerPreference(
