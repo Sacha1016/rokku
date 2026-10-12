@@ -301,7 +301,12 @@ object SettingsTrackingScreen : ComposableSettings() {
         password: String,
     ): Boolean {
         return try {
-            tracker.login(username, password)
+            val ok = tracker.login(username, password)
+            if (!ok) {
+                tracker.logout()
+                withContext(Dispatchers.Main) { context.toast(context.getString(MR.strings.unknown_error)) }
+                return false
+            }
             withContext(Dispatchers.Main) { context.toast(context.getString(MR.strings.successfully_logged_in)) }
             true
         } catch (e: Throwable) {
