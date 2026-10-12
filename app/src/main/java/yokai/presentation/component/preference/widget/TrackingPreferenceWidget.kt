@@ -51,7 +51,6 @@ fun TrackingPreferenceWidget(
     val scope = rememberCoroutineScope()
     val trackPreferences: TrackPreferences by injectLazy()
 
-    // Leer las prefs como estado recompone la fila al refrescar o cambiar de sesión
     val username by trackPreferences.trackUsername(tracker).collectAsState()
     val displayName by trackPreferences.trackDisplayUsername(tracker).collectAsState()
     val shownName = displayName.ifBlank { username }
