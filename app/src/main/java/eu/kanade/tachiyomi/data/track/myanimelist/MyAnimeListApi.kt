@@ -99,7 +99,7 @@ class MyAnimeListApi(private val client: OkHttpClient, interceptor: MyAnimeListI
                         title = it.title
                         summary = it.synopsis
                         total_chapters = it.numChapters
-                        score = it.mean
+                        score = it.mean.toDouble()
                         cover_url = (it.covers?.large ?: it.covers?.medium).orEmpty()
                         tracking_url = "https://myanimelist.net/manga/$media_id"
                         publishing_status = it.status.replace("_", " ")
