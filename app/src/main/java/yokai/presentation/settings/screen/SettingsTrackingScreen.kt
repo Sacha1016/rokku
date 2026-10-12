@@ -94,7 +94,7 @@ object SettingsTrackingScreen : ComposableSettings() {
         val trackManager: TrackManager by injectLazy()
         val sourceManager: SourceManager by injectLazy()
 
-        // Reemplaza a updatePreference()/onActivityResumed del controller antiguo
+        // Replaces updatePreference()/onActivityResumed from the old controller.
         var refresh by remember { mutableIntStateOf(0) }
         LifecycleEventEffect(Lifecycle.Event.ON_RESUME) { refresh++ }
 
