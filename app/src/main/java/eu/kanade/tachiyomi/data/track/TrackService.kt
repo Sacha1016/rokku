@@ -103,7 +103,7 @@ abstract class TrackService(val id: Long) {
     abstract suspend fun login(username: String, password: String): Boolean
 
     /**
-     * Services with [supportsUserRefresh] return the user profile from their API here.
+     * Services with [supportsUserRefresh] re-fetch the user profile from their API here
      * and update the settings that depend on it (display name, scoring type...).
      */
     protected open suspend fun updateUserConfig() {}
