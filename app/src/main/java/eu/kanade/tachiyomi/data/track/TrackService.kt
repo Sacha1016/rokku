@@ -103,15 +103,15 @@ abstract class TrackService(val id: Long) {
     abstract suspend fun login(username: String, password: String): Boolean
 
     /**
-     * Services with [supportsUserRefresh] return the display name from their API here.
-     * Returning null leaves the stored display name unchanged.
+     * Services with [supportsUserRefresh] return the user profile from their API here.
+     * and update the settings that depend on it (display name, scoring type...).
      */
-    protected open suspend fun fetchDisplayUsername(): String? = null
+    protected open suspend fun updateUserConfig() {}
 
     suspend fun refreshUser() {
         if (!supportsUserRefresh || !_isRefreshingFlow.compareAndSet(false, true)) return
         try {
-            fetchDisplayUsername()?.let { saveDisplayUsername(it) }
+            updateUserConfig()
             _refreshResultFlow.emit(RefreshResult.Success)
         } catch (e: Throwable) {
             _refreshResultFlow.emit(RefreshResult.Error(e))
