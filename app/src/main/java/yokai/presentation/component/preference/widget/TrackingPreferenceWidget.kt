@@ -99,8 +99,9 @@ fun TrackingPreferenceWidget(
                     }
                 }
             }
-            if (tracker !is EnhancedTrackService) {
-                IconButton(
+            if (checked) {
+                if (tracker !is EnhancedTrackService) {
+                    IconButton(
                         enabled = !isRefreshing,
                         onClick = {
                             scope.launch(Dispatchers.IO) {
