@@ -7,6 +7,7 @@ import eu.kanade.tachiyomi.data.track.bangumi.dto.BGMCollectionResponse
 import eu.kanade.tachiyomi.data.track.bangumi.dto.BGMOAuth
 import eu.kanade.tachiyomi.data.track.bangumi.dto.BGMSearchItem
 import eu.kanade.tachiyomi.data.track.bangumi.dto.BGMSearchResult
+import eu.kanade.tachiyomi.data.track.bangumi.dto.BGMUser
 import eu.kanade.tachiyomi.data.track.model.TrackSearch
 import eu.kanade.tachiyomi.network.GET
 import eu.kanade.tachiyomi.network.POST
@@ -121,6 +122,14 @@ class BangumiApi(
                     track.private = it.private == 1
                     track
                 }
+        }
+    }
+
+    suspend fun getCurrentUser(): BGMUser {
+        return withIOContext {
+            authClient.newCall(GET("$API_URL/v0/me"))
+                .awaitSuccess()
+                .parseAs<BGMUser>()
         }
     }
 
