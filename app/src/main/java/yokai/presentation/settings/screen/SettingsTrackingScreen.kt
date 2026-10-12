@@ -129,33 +129,6 @@ object SettingsTrackingScreen : ComposableSettings() {
             buildList<Preference.PreferenceItem<out Any>> {
                 add(oauth(trackManager.myAnimeList) { MyAnimeListApi.authUrl() })
                 add(oauth(trackManager.aniList) { AnilistApi.authUrl() })
-                if (trackManager.aniList.isLogged) {
-                    add(
-                        Preference.PreferenceItem.TextPreference(
-                            title = context.getString(
-                                MR.strings.update_tracking_scoring_type,
-                                context.getString(MR.strings.anilist),
-                            ),
-                            onClick = {
-                                scope.launchIO {
-                                    val (result, error) = trackManager.aniList.updatingScoring()
-                                    withUIContext {
-                                        context.toast(
-                                            if (result) {
-                                                context.getString(MR.strings.scoring_type_updated)
-                                            } else {
-                                                context.getString(
-                                                    MR.strings.could_not_update_scoring_,
-                                                    error?.localizedMessage.orEmpty(),
-                                                )
-                                            },
-                                        )
-                                    }
-                                }
-                            },
-                        ),
-                    )
-                }
                 add(credentials(trackManager.kitsu, MR.strings.email))
                 add(credentials(trackManager.mangaUpdates, MR.strings.username))
                 add(oauth(trackManager.shikimori) { ShikimoriApi.authUrl() })
