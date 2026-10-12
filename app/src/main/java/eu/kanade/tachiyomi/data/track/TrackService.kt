@@ -26,6 +26,10 @@ abstract class TrackService(val id: Long) {
     open val client: OkHttpClient
         get() = networkService.client
 
+    open val supportsUserRefresh: Boolean = false
+
+    open suspend fun refreshUser() {}
+
     // Name of the manga sync service to display
     abstract fun nameRes(): StringResource
 
