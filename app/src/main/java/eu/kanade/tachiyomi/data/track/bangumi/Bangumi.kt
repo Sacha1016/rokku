@@ -124,8 +124,12 @@ class Bangumi(private val context: Context, id: Long) : TrackService(id) {
         try {
             val oauth = api.accessToken(code)
             interceptor.newAuth(oauth)
-            val currentUser = api.getCurrentUser()
-            saveDisplayUsername(currentUser.nickname?.takeIf { it.isNotBlank() } ?: currentUser.username)
+            runCatching { api.getCurrentUser() }
+                .onFailure { Logger.e(it) { "Unable to get Bangumi profile" } }
+                .getOrNull()
+                ?.let { user ->
+                    saveDisplayUsername(user.nickname?.takeIf { it.isNotBlank() } ?: user.username)
+                }
             saveCredentials(oauth.userId.toString(), oauth.accessToken)
             return true
         } catch (e: Exception) {
