@@ -8,6 +8,12 @@ import eu.kanade.tachiyomi.data.database.models.isOneShotOrCompleted
 import eu.kanade.tachiyomi.data.track.model.TrackSearch
 import eu.kanade.tachiyomi.network.NetworkHelper
 import kotlinx.collections.immutable.ImmutableList
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.asStateFlow
 import okhttp3.OkHttpClient
 import uy.kohesive.injekt.injectLazy
 import yokai.domain.chapter.interactor.GetChapter
@@ -26,10 +32,6 @@ abstract class TrackService(val id: Long) {
     open val client: OkHttpClient
         get() = networkService.client
 
-    open val supportsUserRefresh: Boolean = false
-
-    open suspend fun refreshUser() {}
-
     // Name of the manga sync service to display
     abstract fun nameRes(): StringResource
 
@@ -41,6 +43,15 @@ abstract class TrackService(val id: Long) {
 
     // Whether the remote service supports organizing entries into user-defined custom lists
     open val supportsCustomLists: Boolean = false
+
+    // Whether the remote service can re-fetch the user's profile (display name) on demand
+    open val supportsUserRefresh: Boolean = false
+
+    private val _isRefreshingFlow = MutableStateFlow(false)
+    val isRefreshingFlow: StateFlow<Boolean> = _isRefreshingFlow.asStateFlow()
+
+    private val _refreshResultFlow = MutableSharedFlow<RefreshResult>(extraBufferCapacity = 1)
+    val refreshResultFlow: SharedFlow<RefreshResult> = _refreshResultFlow.asSharedFlow()
 
     open suspend fun getCustomLists(): List<String> = emptyList()
 
@@ -91,6 +102,24 @@ abstract class TrackService(val id: Long) {
 
     abstract suspend fun login(username: String, password: String): Boolean
 
+    /**
+     * Services with [supportsUserRefresh] return the display name from their API here.
+     * Returning null leaves the stored display name unchanged.
+     */
+    protected open suspend fun fetchDisplayUsername(): String? = null
+
+    suspend fun refreshUser() {
+        if (!supportsUserRefresh || !_isRefreshingFlow.compareAndSet(false, true)) return
+        try {
+            fetchDisplayUsername()?.let { saveDisplayUsername(it) }
+            _refreshResultFlow.emit(RefreshResult.Success)
+        } catch (e: Throwable) {
+            _refreshResultFlow.emit(RefreshResult.Error(e))
+        } finally {
+            _isRefreshingFlow.value = false
+        }
+    }
+
     open suspend fun removeFromService(track: Track): Boolean = false
 
     open fun updateTrackStatus(
@@ -114,7 +143,7 @@ abstract class TrackService(val id: Long) {
     @CallSuper
     open fun logout() {
         trackPreferences.setCredentials(this, "", "")
-        trackPreferences.trackDisplayUsername(this).set("")
+        saveDisplayUsername("")
     }
 
     open val isLogged: Boolean
@@ -125,9 +154,20 @@ abstract class TrackService(val id: Long) {
 
     fun getPassword() = trackPreferences.trackPassword(this).get()
 
+    fun getDisplayUsername() = trackPreferences.trackDisplayUsername(this).get()
+
+    fun saveDisplayUsername(displayName: String) {
+        trackPreferences.trackDisplayUsername(this).set(displayName)
+    }
+
     fun saveCredentials(username: String, password: String) {
         trackPreferences.setCredentials(this, username, password)
     }
+}
+
+sealed interface RefreshResult {
+    data object Success : RefreshResult
+    data class Error(val error: Throwable) : RefreshResult
 }
 
 suspend fun TrackService.updateNewTrackInfo(track: Track) {
